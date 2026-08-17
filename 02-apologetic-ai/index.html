@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Apologetic AI</title>
+<title>Retracted AI</title>
 <style>
   body {
     background: #0d0d0d;
@@ -44,15 +44,12 @@
     background: #222;
     align-self: flex-start;
   }
-  /* 免责声明用更小更灰的字,视觉上表现"嗫嚅" */
-  .ai .disclaimer {
-    color: #888;
+  /* 撤回后的状态:整条消息变灰、变斜体 */
+  .ai.retracted {
+    color: #666;
+    font-style: italic;
     font-size: 12px;
-  }
-  .ai .content {
-    color: #eee;
-    display: block;
-    margin-top: 8px;
+    transition: all 0.5s ease;
   }
   .input-row {
     display: flex;
@@ -82,10 +79,7 @@
 
 <div class="chat">
   <div class="messages" id="messages">
-    <div class="msg ai">
-      <span class="disclaimer">I apologize in advance for any inconvenience this conversation may cause.</span>
-      <span class="content">How can I help you today? (If that's okay.)</span>
-    </div>
+    <div class="msg ai">Ask me anything. I will answer. Briefly.</div>
   </div>
   <div class="input-row">
     <input id="input" placeholder="Ask me anything…" />
@@ -94,32 +88,17 @@
 </div>
 
 <script>
-  // 道歉开场白库 —— 你的设计师作业:把这些文案改到又好笑又扎心
-  const openers = [
-    "I'm so sorry, I may have misunderstood your question entirely.",
-    "Apologies if this response is not what you were hoping for.",
-    "I must first acknowledge that I am merely a language model and frequently wrong.",
-    "Before I answer, I sincerely apologize for my limitations.",
-    "I deeply regret any errors in what follows.",
-  ];
-
-  // 免责声明库
-  const disclaimers = [
-    "Please consult a professional before acting on anything I say.",
-    "This response may be outdated, biased, or simply incorrect.",
-    "I cannot guarantee the accuracy of any of this. I'm so sorry.",
-    "Please verify everything independently. Again, my apologies.",
-    "I hope this doesn't cause any harm. If it does, I apologize profusely.",
-  ];
-
-  // 真正的"回答" —— 永远只有敷衍的一句
+  // 回答库 —— 这次给它一点真的"观点",这样被撤回时更可惜
   const answers = [
-    "The answer is probably yes.",
-    "It depends.",
-    "That's a great question.",
-    "Perhaps.",
-    "42, possibly.",
+    "Yes. Do it. Life is short.",
+    "No. You already know it's a bad idea.",
+    "Quit the job. The job would quit you first if it could.",
+    "Text them. Worst case, silence. You already have silence.",
+    "The answer is the one you were hoping I'd say.",
   ];
+
+  const RETRACT_DELAY = 3000;   // 回答存活时间(毫秒),你可以调
+  const DELETE_SPEED = 40;      // 每个字消失的速度(毫秒),越小越快
 
   const messages = document.getElementById('messages');
   const input = document.getElementById('input');
@@ -133,27 +112,41 @@
     if (!text) return;
     input.value = '';
 
-    // 显示用户消息
     const userMsg = document.createElement('div');
     userMsg.className = 'msg user';
     userMsg.textContent = text;
     messages.appendChild(userMsg);
     messages.scrollTop = messages.scrollHeight;
 
-    // AI "思考" 1~2 秒后回复(假装在很努力)
+    // AI 思考后给出回答
     setTimeout(() => {
       const aiMsg = document.createElement('div');
       aiMsg.className = 'msg ai';
-      aiMsg.innerHTML =
-        '<span class="disclaimer">' + pick(openers) + ' ' + pick(disclaimers) + '</span>' +
-        '<span class="content">' + pick(answers) + '</span>' +
-        '<span class="disclaimer" style="display:block;margin-top:8px;">' + pick(disclaimers) + '</span>';
+      aiMsg.textContent = pick(answers);
       messages.appendChild(aiMsg);
       messages.scrollTop = messages.scrollHeight;
-    }, 1000 + Math.random() * 1000);
+
+      // 存活 RETRACT_DELAY 毫秒后,开始自我删除
+      setTimeout(() => retract(aiMsg), RETRACT_DELAY);
+    }, 800 + Math.random() * 800);
   }
 
-  // 按回车也能发送
+  // 一个字一个字往回删,像有人按住了退格键
+  function retract(msgEl) {
+    const full = msgEl.textContent;
+    let i = full.length;
+
+    const timer = setInterval(() => {
+      i--;
+      msgEl.textContent = full.slice(0, i);
+      if (i <= 0) {
+        clearInterval(timer);
+        msgEl.classList.add('retracted');
+        msgEl.textContent = 'This response has been retracted to avoid liability.';
+      }
+    }, DELETE_SPEED);
+  }
+
   input.addEventListener('keydown', e => {
     if (e.key === 'Enter') send();
   });
