@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lying Progress Bar</title>
+<style>
+  body {
+    background: #0d0d0d;
+    color: #eee;
+    font-family: monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .bar-container {
+    width: 400px;
+    height: 8px;
+    background: #2a2a2a;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .bar {
+    height: 100%;
+    width: 0%;
+    background: #4ade80;
+    border-radius: 4px;
+    /* transition 让宽度变化是平滑的，而不是跳变 —— 这就是"手感" */
+    transition: width 0.4s ease;
+  }
+  .label {
+    margin-top: 16px;
+    font-size: 14px;
+    color: #999;
+  }
+</style>
+</head>
+<body>
+
+<div class="bar-container">
+  <div class="bar" id="bar"></div>
+</div>
+<div class="label" id="label">Loading… 0%</div>
+
+<script>
+  const bar = document.getElementById('bar');
+  const label = document.getElementById('label');
+  let progress = 0;
+
+  // 每隔一段时间更新一次进度
+  function tick() {
+    if (progress < 99) {
+      // 正常阶段：随机往前走一点，越接近99走得越慢（像真的一样）
+      progress += Math.random() * (99 - progress) * 0.08 + 0.3;
+      if (progress > 99) progress = 99;
+    } else {
+      // 撒谎阶段：到了99%，突然心虚倒退
+      progress -= Math.random() * 15 + 5; // 倒退 5~20%
+    }
+
+    bar.style.width = progress + '%';
+    label.textContent = 'Loading… ' + Math.floor(progress) + '%';
+
+    // 下一次更新的间隔也是随机的，制造"卡顿感"
+    setTimeout(tick, 300 + Math.random() * 900);
+  }
+
+  tick();
+</script>
+
+</body>
+</html>
