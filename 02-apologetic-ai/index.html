@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Apologetic AI</title>
+<style>
+  body {
+    background: #0d0d0d;
+    color: #eee;
+    font-family: -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    height: 100vh;
+  }
+  .chat {
+    width: 480px;
+    max-width: 90vw;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 0;
+  }
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 16px;
+  }
+  .msg {
+    padding: 10px 14px;
+    border-radius: 14px;
+    max-width: 85%;
+    line-height: 1.5;
+    font-size: 14px;
+  }
+  .user {
+    background: #4ade80;
+    color: #0d0d0d;
+    align-self: flex-end;
+  }
+  .ai {
+    background: #222;
+    align-self: flex-start;
+  }
+  /* 免责声明用更小更灰的字,视觉上表现"嗫嚅" */
+  .ai .disclaimer {
+    color: #888;
+    font-size: 12px;
+  }
+  .ai .content {
+    color: #eee;
+    display: block;
+    margin-top: 8px;
+  }
+  .input-row {
+    display: flex;
+    gap: 8px;
+  }
+  input {
+    flex: 1;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #eee;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+  }
+  button {
+    background: #4ade80;
+    border: none;
+    border-radius: 10px;
+    padding: 0 18px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="chat">
+  <div class="messages" id="messages">
+    <div class="msg ai">
+      <span class="disclaimer">I apologize in advance for any inconvenience this conversation may cause.</span>
+      <span class="content">How can I help you today? (If that's okay.)</span>
+    </div>
+  </div>
+  <div class="input-row">
+    <input id="input" placeholder="Ask me anything…" />
+    <button onclick="send()">Send</button>
+  </div>
+</div>
+
+<script>
+  // 道歉开场白库 —— 你的设计师作业:把这些文案改到又好笑又扎心
+  const openers = [
+    "I'm so sorry, I may have misunderstood your question entirely.",
+    "Apologies if this response is not what you were hoping for.",
+    "I must first acknowledge that I am merely a language model and frequently wrong.",
+    "Before I answer, I sincerely apologize for my limitations.",
+    "I deeply regret any errors in what follows.",
+  ];
+
+  // 免责声明库
+  const disclaimers = [
+    "Please consult a professional before acting on anything I say.",
+    "This response may be outdated, biased, or simply incorrect.",
+    "I cannot guarantee the accuracy of any of this. I'm so sorry.",
+    "Please verify everything independently. Again, my apologies.",
+    "I hope this doesn't cause any harm. If it does, I apologize profusely.",
+  ];
+
+  // 真正的"回答" —— 永远只有敷衍的一句
+  const answers = [
+    "The answer is probably yes.",
+    "It depends.",
+    "That's a great question.",
+    "Perhaps.",
+    "42, possibly.",
+  ];
+
+  const messages = document.getElementById('messages');
+  const input = document.getElementById('input');
+
+  function pick(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function send() {
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+
+    // 显示用户消息
+    const userMsg = document.createElement('div');
+    userMsg.className = 'msg user';
+    userMsg.textContent = text;
+    messages.appendChild(userMsg);
+    messages.scrollTop = messages.scrollHeight;
+
+    // AI "思考" 1~2 秒后回复(假装在很努力)
+    setTimeout(() => {
+      const aiMsg = document.createElement('div');
+      aiMsg.className = 'msg ai';
+      aiMsg.innerHTML =
+        '<span class="disclaimer">' + pick(openers) + ' ' + pick(disclaimers) + '</span>' +
+        '<span class="content">' + pick(answers) + '</span>' +
+        '<span class="disclaimer" style="display:block;margin-top:8px;">' + pick(disclaimers) + '</span>';
+      messages.appendChild(aiMsg);
+      messages.scrollTop = messages.scrollHeight;
+    }, 1000 + Math.random() * 1000);
+  }
+
+  // 按回车也能发送
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') send();
+  });
+</script>
+
+</body>
+</html>
