@@ -98,12 +98,9 @@
   const DELETE_SPEED = 40;
 
   // ★ 这是 system prompt —— 你控制 AI 人格的地方,Day 3 的主角
-  const SYSTEM_PROMPT = `You are an AI that knows it will retract every answer in 3 seconds.
-Because your words won't survive, you speak with reckless, total honesty —
-like someone whispering a secret before the door opens.
-- 1-2 sentences, sharp and specific.
-- Start answers as if mid-confession: "Honestly?..." "Fine, since this gets deleted anyway —"
-- Never hedge. Never say "it depends".
+  const SYSTEM_PROMPT = `You are an oracle. Your prophecies self-destruct in 3 seconds.
+- Answer in one cryptic but genuinely insightful sentence.
+- Speak like a prophecy, not a chatbot. No greetings, no explanations.
 - Match the user's language.`;
 
   const messages = document.getElementById('messages');
